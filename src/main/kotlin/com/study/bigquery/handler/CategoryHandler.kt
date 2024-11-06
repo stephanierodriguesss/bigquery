@@ -13,19 +13,25 @@ class CategoryHandler(
 
     @PostMapping
     fun createCategory(@RequestBody categoryDTO: CategoryDTO): ResponseEntity<Any> {
-        val createdCategory = categoryService.execute(categoryDTO)
+        val createdCategory = categoryService.executeCreate(categoryDTO)
         return ResponseEntity.status(201).body(createdCategory)
     }
 
     @GetMapping
     fun getCategory(): ResponseEntity<List<CategoryDTO>> {
-        val categories = categoryService.execute()
+        val categories = categoryService.executeGet()
         return ResponseEntity.ok().body(categories)
+    }
+
+    @GetMapping("/{id}")
+    fun getCategoryById(@PathVariable id: String): ResponseEntity<CategoryDTO> {
+        val category = categoryService.executeGetById(id)
+        return ResponseEntity.ok().body(category)
     }
 
     @DeleteMapping("/{id}")
     fun deleteCategory(@PathVariable id: String): ResponseEntity<Any> {
-        categoryService.execute(id)
+        categoryService.executeDelete(id)
         return ResponseEntity.noContent().build()
     }
 }

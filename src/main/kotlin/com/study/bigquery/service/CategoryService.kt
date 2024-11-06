@@ -14,7 +14,7 @@ class CategoryService(
     private val bigQueryGateway: BigQueryGateway
 ) {
 
-    fun execute(categoryDTO: CategoryDTO): CategoryDTO {
+    fun executeCreate(categoryDTO: CategoryDTO): CategoryDTO {
         val category = buildCategory(categoryDTO)
         val jobConfig = queryCreateCategory(category)
 
@@ -22,7 +22,7 @@ class CategoryService(
         return categoryDTO
     }
 
-    fun execute(): List<CategoryDTO> {
+    fun executeGet(): List<CategoryDTO> {
         val jobConfig = queryGetCategory()
 
         val result = bigQueryGateway.executeQuery(jobConfig)
@@ -38,7 +38,19 @@ class CategoryService(
         }.toList().sortedBy { it.id }
     }
 
-    fun execute(idCategory: String) {
+    fun executeGetById(idCategory: String): CategoryDTO {
+        val jobConfig = queryGetCategoryById(idCategory)
+        val result = bigQueryGateway.executeQuery(jobConfig)
+
+        val row = result.iterateAll().iterator().next()
+        val id = row.get("id").value as String
+        return CategoryDTO(
+            id = id.toInt(),
+            name = row.get("name").value as String
+        )
+    }
+
+    fun executeDelete(idCategory: String) {
         val jobConfig = queryDeleteCategory(idCategory)
         bigQueryGateway.executeQuery(jobConfig)
     }
@@ -59,8 +71,15 @@ class CategoryService(
         return QueryJobConfiguration.newBuilder(query).build()
     }
 
+    fun queryGetCategoryById(idCategory: String): QueryJobConfiguration {
+        val query = """SELECT * FROM Vendas.Categoria WHERE id = @id"""
+        return QueryJobConfiguration.newBuilder(query)
+            .addNamedParameter("id", QueryParameterValue.int64(idCategory.toLong())).build()
+    }
+
     fun queryDeleteCategory(idCategory: String): QueryJobConfiguration {
         val query = """DELETE FROM Vendas.Categoria WHERE id = @id"""
-        return QueryJobConfiguration.newBuilder(query).addNamedParameter("id", QueryParameterValue.int64(idCategory.toLong())).build()
+        return QueryJobConfiguration.newBuilder(query)
+            .addNamedParameter("id", QueryParameterValue.int64(idCategory.toLong())).build()
     }
 }
