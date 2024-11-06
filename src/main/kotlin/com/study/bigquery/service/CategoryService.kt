@@ -22,6 +22,22 @@ class CategoryService(
         return categoryDTO
     }
 
+    fun execute(): List<CategoryDTO> {
+        val jobConfig = queryGetCategory()
+
+        val result = bigQueryGateway.executeQuery(jobConfig)
+
+        return result.iterateAll().map { row ->
+            val id = row.get("id").value as String
+            val name = row.get("name").value as String
+
+            CategoryDTO(
+                id = id.toInt(),
+                name = name
+            )
+        }.toList()
+    }
+
     fun queryCreateCategory(category: Category): QueryJobConfiguration {
         val query = """INSERT INTO Vendas.Categoria (id, name) VALUES (@id, @name)"""
 
@@ -31,5 +47,10 @@ class CategoryService(
             .build()
 
         return jobConfig
+    }
+
+    fun queryGetCategory(): QueryJobConfiguration {
+        val query = """SELECT * FROM Vendas.Categoria LIMIT 100"""
+        return QueryJobConfiguration.newBuilder(query).build()
     }
 }
