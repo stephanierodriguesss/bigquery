@@ -22,4 +22,10 @@ class CategoryHandler(
         val categories = categoryService.execute()
         return ResponseEntity.ok().body(categories)
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteCategory(@PathVariable id: String): ResponseEntity<Any> {
+        categoryService.execute(id)
+        return ResponseEntity.noContent().build()
+    }
 }

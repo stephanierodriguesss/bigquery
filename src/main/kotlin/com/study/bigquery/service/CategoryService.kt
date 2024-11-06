@@ -35,7 +35,12 @@ class CategoryService(
                 id = id.toInt(),
                 name = name
             )
-        }.toList()
+        }.toList().sortedBy { it.id }
+    }
+
+    fun execute(idCategory: String) {
+        val jobConfig = queryDeleteCategory(idCategory)
+        bigQueryGateway.executeQuery(jobConfig)
     }
 
     fun queryCreateCategory(category: Category): QueryJobConfiguration {
@@ -52,5 +57,10 @@ class CategoryService(
     fun queryGetCategory(): QueryJobConfiguration {
         val query = """SELECT * FROM Vendas.Categoria LIMIT 100"""
         return QueryJobConfiguration.newBuilder(query).build()
+    }
+
+    fun queryDeleteCategory(idCategory: String): QueryJobConfiguration {
+        val query = """DELETE FROM Vendas.Categoria WHERE id = @id"""
+        return QueryJobConfiguration.newBuilder(query).addNamedParameter("id", QueryParameterValue.int64(idCategory.toLong())).build()
     }
 }
