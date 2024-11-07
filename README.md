@@ -20,7 +20,7 @@ To connect the app to BigQuery, you must configure your credentials in the Googl
 With this, just run the application and test the corresponding methods
 
 
-## Stack utilizada
+## Stack used
 
 **Back-end:** Kotlin, Spring, BigQuery
 
@@ -152,7 +152,7 @@ FROM `your-project.Vendas.Categoria`
 - [Udemy Course](https://meli.udemy.com/course/sql-bigquery/learn/lecture/33665794#overview)
 
 
-## Autores
+## Authors
 
 - [@stephanierodriguesss](https://www.github.com/stephanierodriguesss)
 
